@@ -1,0 +1,9 @@
+input {
+  border: 1px solid rgba(0,0,0,0);
+  width: 100%;
+  box-sizing: border-box;
+}
+input:invalid {
+  border: 1px solid red;
+}
+

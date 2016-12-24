@@ -1,0 +1,78 @@
+<table>
+  <thead>
+    <tr>
+      {{#each headings as heading}}
+        <th>{{heading}}</th>
+      {{/each}}
+      {{#if editable}}
+        <th>Actions</th>
+      {{/if}}
+    </tr>
+  </thead>
+  {{#each rows as row}}
+    <tr>
+      {{#each columns as col}}
+        <td>
+          {{#if editable}}
+            <input value='{{matrix.get([row, col])}}' type='number' step='any' on:change='change(row, col, event.target)' required />
+          {{else}}
+            <input value='{{matrix.get([row, col])}}' readonly />
+          {{/if}}
+        </td>
+      {{/each}}
+      {{#if editable}}
+        <td>
+          <button on:click='remove(row)'>✖</button>
+        </td>
+      {{/if}}
+    </tr>
+  {{/each}}
+  {{#if editable}}
+    <tr>
+      {{#each columns as col}}
+        <td>
+          <input value="{{tmp[col]}}" on:change='add(col, event.target)' type='number' step='any' />
+        </td>
+      {{/each}}
+      <td>
+        <button>➕</button>
+      </td>
+    </tr>
+  {{/if}}
+</table>
+
+<script>
+  export default {
+    computed: {
+      rows: matrix => [...Array(matrix.size()[0]).keys()],
+      columns: matrix => [...Array(matrix.size()[1]).keys()],
+    },
+    methods: {
+      change (row, col, target) {
+        if (target.checkValidity()) {
+          var matrix = this.get('matrix');
+          matrix.set([row, col], parseFloat(target.value));
+          this.set({'matrix':matrix});
+        }
+      },
+      add (col, target) {
+        if (target.checkValidity()) {
+          var tmp = this.get('tmp');
+          tmp[col] = parseFloat(target.value);
+          if (tmp[0] && tmp[1]) {
+            var array = this.get('matrix').toArray();
+            array.push(tmp);
+            this.set({'matrix':math.matrix(array)});
+            tmp = [null, null];
+          }
+          this.set({'tmp':tmp});
+        }
+      },
+      remove (row) {
+        var array = this.get('matrix').toArray();
+        array.splice(row, 1);
+        this.set({'matrix':math.matrix(array)});
+      }
+    }
+  }
+</script>
