@@ -90,6 +90,8 @@ function draw() {
   chart.data.datasets[0].data = array.map(arrayToMap);
   array = extimatedVector.get('matrix').toArray();
   array.sort(function (a, b) {return a[0]-b[0]});
+  array.splice(0, 0, [array[0][0]-1, 0]);
+  array.push([array[array.length-1][0]+1, 0]);
   chart.data.datasets[1].data = array.map(arrayToMap);
   chart.update();
 }
