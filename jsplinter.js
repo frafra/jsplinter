@@ -18,6 +18,15 @@ var designMatrix = new Matrix({
   },
 });
 
+var extimatedVector = new Matrix({
+  target: document.querySelector('extimatedVector'),
+  data: {
+    headings: ['Spline', 'Coefficient'],
+    matrix: math.matrix([]),
+    editable: false
+  },
+});
+
 function interpolation() {
   var matrix = observationsMatrix.get('matrix');
   var xVector = math.multiply(matrix, [1, 0]);
@@ -36,7 +45,13 @@ function interpolation() {
     matrix: a,
     editable: false,
   });
-  /* To be continued... */
+  var yVector = math.multiply(matrix, [0, 1]);
+  var aTranspose = math.transpose(a);
+  var whiteNoise = math.dotMultiply(0.1, math.eye(aIndex.size()[0]));
+  var aExtimated = math.multiply(math.multiply(math.inv(math.add(math.multiply(aTranspose, a), whiteNoise)), aTranspose), yVector);
+  extimatedVector.set({
+    matrix:math.matrix(math.transpose([aIndex.toArray(), aExtimated.toArray()]))
+  });
 }
 
 observationsMatrix.observe('matrix', interpolation);
