@@ -8,21 +8,34 @@ var input = new Matrix({
   },
 });
 
-var graph = new Graph({
-  target: document.querySelector('graph'),
+var chart = new Chart('graph', {
+  type: 'line',
   data: {
-    xMax: 0,
-    yMax: 0,
-    points: ''
+    datasets: [{
+      label: 'Input',
+      lineTension: 0
+    }]
+  },
+  options: {
+    scales: {
+      xAxes: [{
+        type: 'linear',
+        position: 'bottom'
+      }]
+    }
   }
 });
-function draw() {
-  data = {
-    xMax: Math.max.apply(null, input.get('matrix').toArray().map(item => item[0])),
-    yMax: Math.max.apply(null, input.get('matrix').toArray().map(item => item[1])),
-    points: input.get('matrix').toArray().sort().join(' ')
-  }
-  graph.set(data);
+
+function arrayToMap(item) {
+  return {x:item[0], y:item[1]};
 }
+
+function draw() {
+  var array = input.get('matrix').toArray();
+  array.sort(function (a, b) {return a[0]-b[0]});
+  chart.data.datasets[0].data = array.map(arrayToMap);
+  chart.update();
+}
+
 input.observe('matrix', draw);
 
