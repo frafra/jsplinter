@@ -47,7 +47,7 @@ function interpolation() {
   });
   var yVector = math.multiply(matrix, [0, 1]);
   var aTranspose = math.transpose(a);
-  var whiteNoise = math.dotMultiply(0.1, math.eye(aIndex.size()[0]));
+  var whiteNoise = math.dotMultiply(0.01, math.eye(aIndex.size()[0]));
   var aExtimated = math.multiply(math.multiply(math.inv(math.add(math.multiply(aTranspose, a), whiteNoise)), aTranspose), yVector);
   extimatedVector.set({
     matrix:math.matrix(math.transpose([aIndex.toArray(), aExtimated.toArray()]))
@@ -61,6 +61,13 @@ var chart = new Chart('graph', {
   data: {
     datasets: [{
       label: 'Input',
+      fill: false,
+      showLine: false,
+      borderColor: 'red',
+      lineTension: 0
+    }, {
+      label: 'Interpolation',
+      fill: false,
       lineTension: 0
     }]
   },
@@ -80,10 +87,12 @@ function arrayToMap(item) {
 
 function draw() {
   var array = observationsMatrix.get('matrix').toArray();
-  array.sort(function (a, b) {return a[0]-b[0]});
   chart.data.datasets[0].data = array.map(arrayToMap);
+  array = extimatedVector.get('matrix').toArray();
+  array.sort(function (a, b) {return a[0]-b[0]});
+  chart.data.datasets[1].data = array.map(arrayToMap);
   chart.update();
 }
 
-observationsMatrix.observe('matrix', draw);
+extimatedVector.observe('matrix', draw);
 
