@@ -4,7 +4,7 @@ var input = new Matrix({
     headings: ['x', 'y'],
     matrix: math.matrix([[0, 1], [1, 3], [2, 2]]),
     editable: true,
-    tmp: [null, null]
+    tmp: [{value:null, validity:false}, {value:null, validity:false}]
   },
 });
 
