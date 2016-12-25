@@ -14,7 +14,7 @@
       {{#each columns as col}}
         <td>
           {{#if editable}}
-            <input value='{{matrix.get([row, col])}}' type='number' step='any' on:input='change(row, col, event.target)' required />
+            <input value='{{matrix.get([row, col])}}' type='number' step='any' on:change='change(row, col, event.target)' required />
           {{else}}
             <input value='{{matrix.get([row, col])}}' readonly />
           {{/if}}
@@ -31,7 +31,7 @@
     <tr>
       {{#each columns as col}}
         <td>
-          <input value="{{tmp[col].value}}" on:input='tmp(col, event.target)' type='number' step='any' />
+          <input value="{{tmp[col].value}}" on:change='tmp(col, event.target)' type='number' step='any' />
         </td>
       {{/each}}
       <td>
@@ -57,17 +57,15 @@
       },
       tmp (col, target) {
         var tmp = this.get('tmp');
-        if (target.checkValidity()) {
-          tmp[col].value = parseFloat(target.value);
-        }
-        tmp[col].validity = target.checkValidity();
+        tmp[col].value = target.value;
+        tmp[col].validity = target.checkValidity() && target.value.length > 0;
         this.set({'tmp':tmp});
       },
       add () {
         var tmp = this.get('tmp');
         if (tmp[0].validity && tmp[1].validity) {
           var array = this.get('matrix').toArray();
-          array.push(tmp.map(item => item.value));
+          array.push(tmp.map(item => parseFloat(item.value)));
           this.set({'matrix':math.matrix(array)});
           tmp = [{value:null, validity:false}, {value:null, validity:false}]
           this.set({'tmp':tmp});
