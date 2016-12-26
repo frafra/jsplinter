@@ -35,10 +35,10 @@ function interpolation() {
   var aIndex = math.range(xMin, xMax, 1, true);
   var a = math.zeros(matrix.size()[0], aIndex.size()[0]);
   xVector.toArray().forEach((item, index) => {
-    a.set([index, math.floor(item)-xMin], 1-math.abs(item%1));
-    if (item%1) {
-      a.set([index, math.floor(item)+1-xMin], math.abs(item%1));
+    if (item > xMin) {
+      a.set([index, math.ceil(item)-xMin-1], math.ceil(item)-item);
     }
+    a.set([index, math.ceil(item)-xMin], 1-(math.ceil(item)-item));
   });
   designMatrix.set({
     headings: aIndex.toArray(),
