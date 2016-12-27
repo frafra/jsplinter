@@ -1,0 +1,11 @@
+{{description}} <input type="number" min="{{minimum}}" step="{{step}}" value="{{value}}" on:input="change(event.target)" on:change="change(event.target)" />
+
+<script>
+  export default {
+    methods: {
+      change (target) {
+        this.set({'value':parseFloat(target.value)});
+      }
+    }
+  }
+</script>

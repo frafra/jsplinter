@@ -8,6 +8,15 @@ var observationsMatrix = new Matrix({
   },
 });
 
+var smoothnessInput = new Input({
+  target: document.querySelector('smoothnessInput'),
+  data: {
+    description: 'Smoothness: ',
+    minimum: 0,
+    step: 0.01,
+    value: 0.01
+  },
+});
 
 var designMatrix = new Matrix({
   target: document.querySelector('designMatrix'),
@@ -47,14 +56,23 @@ function interpolation() {
   });
   var yVector = math.multiply(matrix, [0, 1]);
   var aTranspose = math.transpose(a);
-  var whiteNoise = math.dotMultiply(0.01, math.eye(aIndex.size()[0]));
-  var aExtimated = math.multiply(math.multiply(math.inv(math.add(math.multiply(aTranspose, a), whiteNoise)), aTranspose), yVector);
+  var smoothness = smoothnessInput.get('value');
+  var nMatrix = math.multiply(aTranspose, a);
+  if ((math.det(nMatrix) < 0.01) && (smoothness < 0.01)) {
+    smoothnessInput.set({'minimum':0.01, 'value':0.01});
+    return;
+  } else if (smoothnessInput.get('minimum') > 0) {
+    smoothnessInput.set({'minimum':0});
+  }
+  var whiteNoise = math.dotMultiply(smoothness, math.eye(aIndex.size()[0]));
+  var aExtimated = math.multiply(math.multiply(math.inv(math.add(nMatrix, whiteNoise)), aTranspose), yVector);
   extimatedVector.set({
     matrix:math.matrix(math.transpose([aIndex.toArray(), aExtimated.toArray()]))
   });
 }
 
 observationsMatrix.observe('matrix', interpolation);
+smoothnessInput.observe('value', interpolation);
 
 var chart = new Chart('graph', {
   type: 'line',
