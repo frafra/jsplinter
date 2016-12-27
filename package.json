@@ -17,5 +17,6 @@
   },
   "author": "Francesco Frassinelli",
   "license": "AGPL-3.0",
-  "description": ""
+  "description": "Spline interpolation",
+  "repository": "https://github.com/frafra/jsplinter"
 }
