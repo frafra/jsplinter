@@ -8,6 +8,16 @@ var observationsMatrix = new Matrix({
   },
 });
 
+var deltaInput = new Input({
+  target: document.querySelector('deltaInput'),
+  data: {
+    description: 'Interval: ',
+    minimum: 1,
+    step: 1,
+    value: 1
+  },
+});
+
 var smoothnessInput = new Input({
   target: document.querySelector('smoothnessInput'),
   data: {
@@ -39,15 +49,17 @@ var extimatedVector = new Matrix({
 function interpolation() {
   var matrix = observationsMatrix.get('matrix');
   var xVector = math.multiply(matrix, [1, 0]);
-  var xMin = math.floor(math.min(xVector));
-  var xMax = math.ceil(math.max(xVector));
-  var aIndex = math.range(xMin, xMax, 1, true);
+  var delta = deltaInput.get('value');
+  var xMin = math.floor(math.min(xVector)/delta)*delta;
+  var xMax = math.ceil(math.max(xVector)/delta)*delta;
+  var aIndex = math.range(xMin, xMax, delta, true);
   var a = math.zeros(matrix.size()[0], aIndex.size()[0]);
   xVector.toArray().forEach((item, index) => {
+    var weight = (math.ceil(item)-item)/delta;
     if (item > xMin) {
-      a.set([index, math.ceil(item)-xMin-1], math.ceil(item)-item);
+      a.set([index, math.ceil(item/delta)-xMin/delta-1], weight);
     }
-    a.set([index, math.ceil(item)-xMin], 1-(math.ceil(item)-item));
+    a.set([index, math.ceil(item/delta)-xMin/delta], 1-weight);
   });
   designMatrix.set({
     headings: aIndex.toArray(),
@@ -72,6 +84,7 @@ function interpolation() {
 }
 
 observationsMatrix.observe('matrix', interpolation);
+deltaInput.observe('value', interpolation);
 smoothnessInput.observe('value', interpolation);
 
 var chart = new Chart('graph', {
