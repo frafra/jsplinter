@@ -37,8 +37,8 @@ var designMatrix = new Matrix({
   },
 });
 
-var extimatedVector = new Matrix({
-  target: document.querySelector('extimatedVector'),
+var estimatedVector = new Matrix({
+  target: document.querySelector('estimatedVector'),
   data: {
     headings: ['Spline', 'Coefficient'],
     matrix: math.matrix([]),
@@ -77,9 +77,9 @@ function interpolation() {
     smoothnessInput.set({'minimum':0});
   }
   var whiteNoise = math.dotMultiply(smoothness, math.eye(aIndex.size()[0]));
-  var aExtimated = math.multiply(math.multiply(math.inv(math.add(nMatrix, whiteNoise)), aTranspose), yVector);
-  extimatedVector.set({
-    matrix:math.matrix(math.transpose([aIndex.toArray(), aExtimated.toArray()]))
+  var aestimated = math.multiply(math.multiply(math.inv(math.add(nMatrix, whiteNoise)), aTranspose), yVector);
+  estimatedVector.set({
+    matrix:math.matrix(math.transpose([aIndex.toArray(), aestimated.toArray()]))
   });
 }
 
@@ -119,7 +119,7 @@ function arrayToMap(item) {
 function draw() {
   var array = observationsMatrix.get('matrix').toArray();
   chart.data.datasets[0].data = array.map(arrayToMap);
-  array = extimatedVector.get('matrix').toArray();
+  array = estimatedVector.get('matrix').toArray();
   array.sort(function (a, b) {return a[0]-b[0]});
   array.splice(0, 0, [array[0][0]-1, 0]);
   array.push([array[array.length-1][0]+1, 0]);
@@ -127,5 +127,5 @@ function draw() {
   chart.update();
 }
 
-extimatedVector.observe('matrix', draw);
+estimatedVector.observe('matrix', draw);
 
